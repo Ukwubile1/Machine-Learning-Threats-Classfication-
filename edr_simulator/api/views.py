@@ -5,8 +5,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import ThreatDetectionLog
 
-# Load the trained XGBoost model
-model = joblib.load("xdr_model.pkl")  # Ensure this file exists
+model = joblib.load("xdr_model.pkl")
+
+def dashboard(request):
+    logs = ThreatDetectionLog.objects.order_by('-timestamp')[:50]
+    return render(request, "dashboard.html", {"logs": logs})
+
 
 @csrf_exempt
 def predict_threat(request):
@@ -16,8 +20,8 @@ def predict_threat(request):
             features = np.array(data["features"]).reshape(1, -1)
             
             # Get prediction and probability
-            prob = model.predict_proba(features)[0, 1]  # Probability of "Threat"
-            prediction = bool(model.predict(features)[0])  # Convert to Boolean
+            prob = model.predict_proba(features)[0, 1] 
+            prediction = bool(model.predict(features)[0])
 
             # Save to database
             log_entry = ThreatDetectionLog.objects.create(
