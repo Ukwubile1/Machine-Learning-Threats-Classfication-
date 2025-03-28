@@ -1,7 +1,4 @@
 from django.contrib import admin
-from .models import ThreatDetectionLog
+from .models import PredictionResult
 
-@admin.register(ThreatDetectionLog)
-class ThreatDetectionLogAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'prediction', 'probability')
-    ordering = ('-timestamp',)
+admin.site.register(PredictionResult)
